@@ -1,6 +1,6 @@
 
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../../../../api/auth/[...nextauth]/route';
+import { authOptions } from '../../../api/auth/[...nextauth]/route';
 import { Event } from '@prisma/client';
 import Link from 'next/link';
 
@@ -22,9 +22,9 @@ export default async function EventDetailPage({ params }: { params: { id: string
 
   if (!event) {
     return (
-      <div className="p-8 text-center">
-        <h1 className="text-2xl font-bold mb-4">Event Not Found</h1>
-        <Link href="/dashboard" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+      <div className="p-8 text-center bg-background">
+        <h1 className="text-2xl font-bold mb-4 text-foreground">Event Not Found</h1>
+        <Link href="/dashboard" className="bg-primary hover:bg-secondary text-white font-bold py-2 px-4 rounded">
           Back to Dashboard
         </Link>
       </div>
@@ -32,10 +32,10 @@ export default async function EventDetailPage({ params }: { params: { id: string
   }
 
   return (
-    <div className="p-8">
-      <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-md p-8">
-        <h1 className="text-3xl font-bold mb-4">{event.eventName}</h1>
-        <div className="grid grid-cols-2 gap-4 mb-4">
+    <div className="p-8 bg-background">
+      <div className="max-w-2xl mx-auto bg-background rounded-lg shadow-md p-8">
+        <h1 className="text-3xl font-bold mb-4 text-foreground">{event.eventName}</h1>
+        <div className="grid grid-cols-2 gap-4 mb-4 text-foreground">
           <div>
             <p className="font-bold">Event Type:</p>
             <p>{event.eventType}</p>
@@ -54,7 +54,7 @@ export default async function EventDetailPage({ params }: { params: { id: string
           </div>
         </div>
         <div className="mt-8">
-          <Link href="/dashboard" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          <Link href="/dashboard" className="bg-primary hover:bg-secondary text-white font-bold py-2 px-4 rounded">
             Back to Dashboard
           </Link>
         </div>

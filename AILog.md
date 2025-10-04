@@ -141,17 +141,6 @@ This file documents the main prompts and the resulting changes made by the AI as
 
 ---
 
-### Prompt 13: Implement Pagination
-
-**User Query:** "from now onwards update the ai log with future prompts i give apart from creating the things mentioned in prompt. Now we need to implement pagination. right now all events come in one single page. after 9 event cards we should allow users to visit next page."
-
-**Resulting Changes:**
-- Updated the `GET` handler in `/api/events/route.ts` to return the total number of events along with the paginated event data.
-- Modified the `DashboardPage` component to handle pagination state and render pagination controls.
-- The dashboard now fetches and displays events based on the current page, with 9 events per page.
-
----
-
 ### Prompt 14: Implement Sorting, Filtering, and Searching
 
 **User Query:** "add sorting based on these factors - Date (both ascending and descending), Location. also add filtering based on event type, location. also add searching based on event name"
@@ -161,3 +150,17 @@ This file documents the main prompts and the resulting changes made by the AI as
 - The `where` and `orderBy` clauses of the Prisma query are now dynamically constructed based on these parameters.
 - Updated the `DashboardPage` component to include UI elements for sorting, filtering, and searching.
 - The dashboard now fetches and displays events based on the selected sorting, filtering, and searching options.
+
+---
+
+### Prompt 15: Refactor EventFilters and Implement Debouncing
+
+**User Query:** "Please refactor the EventFilters.tsx component and any related file to fix two issues: the initial data vanishing, and to make the filters update dynamically and efficiently. First, solve the 'vanishing events' problem by preventing the useEffect from running on its initial mount; use a useRef hook to track the first render and add a condition inside the useEffect to skip the API fetch on the initial mount. Second, to make the text-based filters for search and location more efficient, implement debouncing. Create a custom useDebounce hook that takes a value and a delay (e.g., 500ms) and returns the debounced value. Then, use this hook in the EventFilters component to get debounced versions of the search and location states, and update the useEffect's dependency array to use these debounced values. This will ensure the API is only called after the user has stopped typing. The final result should be a component that correctly displays initial data and updates efficiently and automatically whenever a filter value changes."
+
+**Resulting Changes:**
+- Created a `useDebounce` custom hook to delay API calls.
+- Refactored the `EventFilters.tsx` component to use the `useDebounce` hook for search and location fields.
+- Used a `useRef` hook to prevent the initial data from vanishing on the first render.
+- The `useEffect` hook in `EventFilters.tsx` is updated to use the debounced values and skip the initial render.
+
+---
