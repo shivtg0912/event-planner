@@ -138,3 +138,26 @@ This file documents the main prompts and the resulting changes made by the AI as
 - Created a new page at `/dashboard/event/[id]/page.tsx` to display the details of a single event.
 - Created a new page at `/dashboard/event/[id]/edit/page.tsx` with a form to update an event.
 - The update form makes a `PATCH` request to the API.
+
+---
+
+### Prompt 13: Implement Pagination
+
+**User Query:** "from now onwards update the ai log with future prompts i give apart from creating the things mentioned in prompt. Now we need to implement pagination. right now all events come in one single page. after 9 event cards we should allow users to visit next page."
+
+**Resulting Changes:**
+- Updated the `GET` handler in `/api/events/route.ts` to return the total number of events along with the paginated event data.
+- Modified the `DashboardPage` component to handle pagination state and render pagination controls.
+- The dashboard now fetches and displays events based on the current page, with 9 events per page.
+
+---
+
+### Prompt 14: Implement Sorting, Filtering, and Searching
+
+**User Query:** "add sorting based on these factors - Date (both ascending and descending), Location. also add filtering based on event type, location. also add searching based on event name"
+
+**Resulting Changes:**
+- Updated the `GET` handler in `/api/events/route.ts` to accept parameters for sorting, filtering, and searching.
+- The `where` and `orderBy` clauses of the Prisma query are now dynamically constructed based on these parameters.
+- Updated the `DashboardPage` component to include UI elements for sorting, filtering, and searching.
+- The dashboard now fetches and displays events based on the selected sorting, filtering, and searching options.

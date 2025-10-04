@@ -60,7 +60,10 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const take = parseInt(searchParams.get('take') || '10');
     const skip = parseInt(searchParams.get('skip') || '0');
-    const eventType = searchParams.get('eventType') as EventType | null;
+    const sortBy = searchParams.get('sortBy') || 'eventDate';
+    const sortOrder = searchParams.get('sortOrder') || 'asc';
+    const location = searchParams.get('location');
+    const search = searchParams.get('search');
 
     const where: any = {
       userId: session.user.id,
@@ -70,13 +73,36 @@ export async function GET(req: Request) {
       where.eventType = eventType;
     }
 
-    const events = await prisma.event.findMany({
-      where,
-      take,
-      skip,
-    });
+    if (location) {
+      where.location = { 
+        contains: location, 
+        mode: 'insensitive' 
+      };
+    }
 
-    return NextResponse.json(events);
+    if (search) {
+      where.eventName = {
+        contains: search,
+        mode: 'insensitive',
+      };
+    }
+
+    const orderBy: any = {};
+    if (sortBy) {
+      orderBy[sortBy] = sortOrder;
+    }
+
+    const [events, total] = await prisma.$transaction([
+      prisma.event.findMany({
+        where,
+        orderBy,
+        take,
+        skip,
+      }),
+      prisma.event.count({ where }),
+    ]);
+
+    return NextResponse.json({ events, total });
   } catch (error) {
     console.error('Error fetching events:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
