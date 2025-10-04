@@ -18,12 +18,25 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Missing required fields: eventName, eventType, and eventDate' }, { status: 400 });
     }
 
+    // Validate and parse dates
+    const parsedEventDate = new Date(eventDate);
+    const parsedEventTime = eventTime ? new Date(eventTime) : parsedEventDate;
+
+    // Check if dates are valid
+    if (isNaN(parsedEventDate.getTime())) {
+      return NextResponse.json({ error: 'Invalid eventDate format' }, { status: 400 });
+    }
+
+    if (eventTime && isNaN(parsedEventTime.getTime())) {
+      return NextResponse.json({ error: 'Invalid eventTime format' }, { status: 400 });
+    }
+
     const newEvent = await prisma.event.create({
       data: {
         eventName,
         eventType,
-        eventDate: new Date(eventDate),
-        eventTime: new Date(eventTime),
+        eventDate: parsedEventDate,
+        eventTime: parsedEventTime,
         location,
         userId: session.user.id,
       },

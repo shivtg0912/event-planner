@@ -45,7 +45,20 @@ This file documents the main prompts and the resulting changes made by the AI as
 - Ran `prisma generate`.
 - Created `src/app/api/events/route.ts` with `GET` and `POST` handlers implementing authentication, validation, pagination, and filtering.
 
-### Prompt 5: Re-create Sign-in Page after some error
+---
+
+### Prompt 5: Codebase Review and Rollback
+
+**Prompt:** "read the codebase again and till now generate what all has been done. I rollbacked some changes and want to start from here"
+
+**Resulting Changes:**
+- The assistant analyzed the codebase and found that the events API and the sign-in page had been rolled back.
+- A summary of the project's state was provided.
+- An import issue in `src/app/api/auth/[...nextauth]/route.ts` was corrected.
+
+---
+
+### Prompt 6: Re-create Sign-in Page
 
 **Prompt:** "create the signin page first"
 
@@ -54,7 +67,7 @@ This file documents the main prompts and the resulting changes made by the AI as
 
 ---
 
-### Prompt 5: Implement Sign-up Page
+### Prompt 7: Implement Sign-up Page
 
 **Prompt:** "Implement the sign up/registration page too in cohesion with the sign in page (the button should toggle accordingly)"
 
@@ -65,7 +78,7 @@ This file documents the main prompts and the resulting changes made by the AI as
 
 ---
 
-### Prompt 7: Create Events API
+### Prompt 8: Create Events API
 
 **Prompt:** "Generate the complete API route file at `pages/api/events/index.js`. The API must use NextAuth for authentication... (and all the other details)"
 
@@ -76,7 +89,7 @@ This file documents the main prompts and the resulting changes made by the AI as
 
 ---
 
-### Prompt 8: Create Dashboard
+### Prompt 9: Create Dashboard
 
 **Prompt:** "I need to build the main dashboard for my event planner... (and all the other details)"
 
@@ -89,3 +102,39 @@ This file documents the main prompts and the resulting changes made by the AI as
 - Fixed issues with the `fetch` call and `Link` component in the dashboard page.
 
 ---
+
+### Prompt 10: Fix "Not Found" Page Issue
+
+**Prompt:** "on running npm run dev, the next js page is not found"
+
+**Resulting Changes:**
+- Modified `src/app/auth/signin/page.tsx` to redirect the user to `/dashboard` after a successful sign-in.
+
+---
+
+### Prompt 11: Create Event UI and Endpoint Inquiry
+
+**User Query:**
+- "do we have update and delete endpoints apart from the already present create and read endpoints?"
+- "Build a user interface (a window that allows user to create a new event card so that it is added in the dashboard right now only create new event button exists)."
+
+**Resulting Changes:**
+- Answered the user's question about the missing `UPDATE` and `DELETE` endpoints.
+- Created a new page at `/dashboard/create/page.tsx` for creating a new event.
+- The page is a client component with a form containing fields for `eventName`, `eventType`, `eventDate`, `eventTime`, and `location`.
+- The form makes a `POST` request to `/api/events`.
+- After successful creation, the user is redirected to `/dashboard`.
+
+---
+
+### Prompt 12: Implement Update and Delete Functionality for Events
+
+**User Query:** "Create the Update and Delete endpoints for our event cards. When a user selects the card they can view all the details and also add a triple dot menu on top right corner of each card for update and delete"
+
+**Resulting Changes:**
+- Created `GET`, `PATCH`, and `DELETE` endpoints for single events at `/api/events/[id]/route.ts`.
+- Updated the `EventCard` component to include a "triple dot" menu with "View", "Update", and "Delete" options.
+- The "Delete" option triggers a `DELETE` request to the API and refreshes the dashboard.
+- Created a new page at `/dashboard/event/[id]/page.tsx` to display the details of a single event.
+- Created a new page at `/dashboard/event/[id]/edit/page.tsx` with a form to update an event.
+- The update form makes a `PATCH` request to the API.
