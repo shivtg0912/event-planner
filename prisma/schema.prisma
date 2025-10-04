@@ -1,0 +1,44 @@
+
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  events    Event[]
+}
+
+model Event {
+  id          Int       @id @default(autoincrement())
+  eventName   String
+  eventType   EventType
+  date        DateTime
+  time        DateTime
+  type        MeetingType
+  location    String
+  user        User      @relation(fields: [userId], references: [id])
+  userId      Int
+}
+
+enum EventType {
+  CONFERENCE
+  WORKSHOP
+  MEETING
+  SOCIAL
+  OTHER
+}
+
+enum MeetingType {
+  ONLINE
+  OFFLINE
+}
