@@ -1,12 +1,10 @@
-
 'use client'
 
 import { useState } from 'react';
-import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
-export default function SignIn() {
+export default function SignUp() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -14,22 +12,27 @@ export default function SignIn() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const result = await signIn('credentials', {
-      redirect: false,
-      email,
-      password,
+    setError('');
+
+    const res = await fetch('/api/auth/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password }),
     });
 
-    if (result?.error) {
-      setError('Invalid credentials');
+    if (res.ok) {
+      router.push('/auth/signin');
     } else {
-      router.push('/dashboard');
+      const data = await res.json();
+      setError(data.error || 'Something went wrong');
     }
   };
 
   return (
     <div style={{ maxWidth: '400px', margin: '100px auto', padding: '20px', border: '1px solid #ccc', borderRadius: '5px' }}>
-      <h1>Sign In</h1>
+      <h1>Sign Up</h1>
       <form onSubmit={handleSubmit}>
         <div style={{ marginBottom: '15px' }}>
           <label>Email</label>
@@ -53,13 +56,13 @@ export default function SignIn() {
         </div>
         {error && <p style={{ color: 'red' }}>{error}</p>}
         <button type="submit" style={{ width: '100%', padding: '10px', backgroundColor: '#0070f3', color: 'white', border: 'none', borderRadius: '5px' }}>
-          Sign In
+          Sign Up
         </button>
       </form>
       <p style={{ textAlign: 'center', marginTop: '15px' }}>
-        Don't have an account?{' '}
-        <Link href="/auth/signup" style={{ color: '#0070f3' }}>
-          Sign Up
+        Already have an account?{' '}
+        <Link href="/auth/signin" style={{ color: '#0070f3' }}>
+          Sign In
         </Link>
       </p>
     </div>
