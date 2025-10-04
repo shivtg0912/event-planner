@@ -22,9 +22,8 @@ model Event {
   id          Int       @id @default(autoincrement())
   eventName   String
   eventType   EventType
-  date        DateTime
-  time        DateTime
-  type        MeetingType
+  eventDate   DateTime
+  eventTime   DateTime
   location    String
   user        User      @relation(fields: [userId], references: [id])
   userId      Int
@@ -36,9 +35,4 @@ enum EventType {
   MEETING
   SOCIAL
   OTHER
-}
-
-enum MeetingType {
-  ONLINE
-  OFFLINE
 }
