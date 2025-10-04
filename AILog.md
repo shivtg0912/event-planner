@@ -1,3 +1,4 @@
+
 # AI Documentation
 
 This file documents the main prompts and the resulting changes made by the AI assistant.
@@ -164,3 +165,21 @@ This file documents the main prompts and the resulting changes made by the AI as
 - The `useEffect` hook in `EventFilters.tsx` is updated to use the debounced values and skip the initial render.
 
 ---
+<!-- 
+### Prompt 16: Fix TypeScript Errors in API Route
+
+**User Query:** "Please fix the TypeScript errors in my app/api/events/route.ts file. The build is failing with @typescript-eslint/no-explicit-any errors around lines 68 and 90. Analyze the code, identify the variables that are implicitly typed as any (this is likely a Prisma where clause object), and replace any with specific, appropriate TypeScript types. Also, remove the unused EventType import to clear the warning."
+
+**Resulting Changes:**
+- Updated `app/api/events/route.ts` to use `Prisma.EventWhereInput` and `Prisma.EventOrderByWithRelationInput` types for the `where` and `orderBy` clauses.
+- Removed the unused `EventType` import.
+
+---
+
+### Prompt 17: Fix TypeScript Errors in Dashboard Pages
+
+**User Query:** "Please fix the @typescript-eslint/no-explicit-any errors in my dashboard pages. In app/dashboard/page.tsx (errors around lines 30 and 35) and app/dashboard/event/[id]/page.tsx (error on line 7), the page props like params or searchParams are implicitly typed as any. Add the correct, specific TypeScript types for these page props according to Next.js App Router conventions. Also, clean up any unused variable warnings in these files."
+
+**Resulting Changes:**
+- Updated `app/dashboard/page.tsx` to add the correct type for the `searchParams` prop.
+- Updated `app/dashboard/event/[id]/page.tsx` to add the correct type for the `params` prop. -->

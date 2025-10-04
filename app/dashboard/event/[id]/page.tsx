@@ -16,7 +16,12 @@ async function getEvent(id: string, session: any) {
   return res.json();
 }
 
-export default async function EventDetailPage({ params }: { params: { id: string } }) {
+
+interface EventDetailPageProps {
+  params: { id: string };
+}
+
+export default async function EventDetailPage({ params }: EventDetailPageProps) {
   const session = await getServerSession(authOptions);
   const event: Event | null = await getEvent(params.id, session);
 

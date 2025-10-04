@@ -6,6 +6,9 @@ import Link from 'next/link';
 import { prisma } from '../lib/prisma';
 import EventFilters from './EventFilters';
 
+
+import { Prisma } from '@prisma/client';
+
 async function getEvents({ 
   userId, 
   take, 
@@ -27,12 +30,12 @@ async function getEvents({
 }) {
   if (!userId) return { events: [], total: 0 };
 
-  const where: any = { userId };
+  const where: Prisma.EventWhereInput = { userId };
   if (eventType) where.eventType = eventType;
   if (location) where.location = { contains: location, mode: 'insensitive' };
   if (search) where.eventName = { contains: search, mode: 'insensitive' };
 
-  const orderBy: any = {};
+  const orderBy: Prisma.EventOrderByWithRelationInput = {};
   if (sortBy) orderBy[sortBy] = sortOrder;
 
   try {
