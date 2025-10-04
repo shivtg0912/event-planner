@@ -4,6 +4,7 @@
 import { Event } from '@prisma/client';
 import { Menu } from '@headlessui/react';
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 interface EventCardProps {
   event: Event;
@@ -11,6 +12,11 @@ interface EventCardProps {
 
 export default function EventCard({ event }: EventCardProps) {
   const router = useRouter();
+  const [formattedDate, setFormattedDate] = useState<string | null>(null);
+
+  useEffect(() => {
+    setFormattedDate(new Date(event.eventDate).toLocaleDateString());
+  }, [event.eventDate]);
 
   const handleDelete = async () => {
     if (confirm('Are you sure you want to delete this event?')) {
@@ -73,7 +79,7 @@ export default function EventCard({ event }: EventCardProps) {
       </div>
       <h2 className="text-xl font-bold mb-2">{event.eventName}</h2>
       <p className="text-gray-600 mb-2">{event.eventType}</p>
-      <p className="text-gray-600 mb-2">{new Date(event.eventDate).toLocaleDateString()}</p>
+      <p className="text-gray-600 mb-2">{formattedDate}</p>
       <p className="text-gray-600">{event.location}</p>
     </div>
   );

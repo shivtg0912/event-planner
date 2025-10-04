@@ -1,21 +1,24 @@
 
 'use client'
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Event, EventType } from '@prisma/client';
 import EventCard from '../../components/events/EventCard';
 
+import { useDebounce } from '../hooks/useDebounce';
+
 interface EventFiltersProps {
-  initialEvents: Event[];
-  initialTotal: number;
+  initialEvents?: Event[];
+  initialTotal?: number;
 }
 
 export default function EventFilters({ initialEvents, initialTotal }: EventFiltersProps) {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const [events, setEvents] = useState(initialEvents || []);
-  const [total, setTotal] = useState(initialTotal);
+  const [events, setEvents] = useState<Event[]>(initialEvents || []);
+  const [total, setTotal] = useState(initialTotal || 0);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [eventType, setEventType] = useState(searchParams.get('eventType') || '');
   const [location, setLocation] = useState(searchParams.get('location') || '');
@@ -23,24 +26,59 @@ export default function EventFilters({ initialEvents, initialTotal }: EventFilte
   const [sortBy, setSortBy] = useState(searchParams.get('sortBy') || 'eventDate');
   const [sortOrder, setSortOrder] = useState(searchParams.get('sortOrder') || 'asc');
 
-  useEffect(() => {
-    const fetchEvents = async () => {
-      const params = new URLSearchParams(searchParams.toString());
-      params.set('eventType', eventType);
-      params.set('location', location);
-      params.set('search', search);
-      params.set('sortBy', sortBy);
-      params.set('sortOrder', sortOrder);
+  const debouncedSearch = useDebounce(search, 500);
+  const debouncedLocation = useDebounce(location, 500);
 
-      const res = await fetch(`/api/events?${params.toString()}`);
-      const data = await res.json();
-      setEvents(data.events || []);
-      setTotal(data.total || 0);
-      router.replace(`/dashboard?${params.toString()}`);
+  const isInitialMount = useRef(true);
+
+  // Update state when initialEvents change (e.g., on page refresh)
+  useEffect(() => {
+    if (initialEvents) {
+      setEvents(initialEvents);
+    }
+    if (initialTotal !== undefined) {
+      setTotal(initialTotal);
+    }
+  }, [initialEvents, initialTotal]);
+
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+
+    const fetchEvents = async () => {
+      setIsLoading(true);
+      try {
+        const params = new URLSearchParams(searchParams.toString());
+        params.set('eventType', eventType);
+        params.set('location', debouncedLocation);
+        params.set('search', debouncedSearch);
+        params.set('sortBy', sortBy);
+        params.set('sortOrder', sortOrder);
+
+        const res = await fetch(`/api/events?${params.toString()}`);
+        if (res.ok) {
+          const data = await res.json();
+          setEvents(data.events || []);
+          setTotal(data.total || 0);
+        } else {
+          console.error('Failed to fetch events');
+          setEvents([]);
+          setTotal(0);
+        }
+        router.replace(`/dashboard?${params.toString()}`);
+      } catch (error) {
+        console.error('Error fetching events:', error);
+        setEvents([]);
+        setTotal(0);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     fetchEvents();
-  }, [eventType, location, search, sortBy, sortOrder, searchParams, router]);
+  }, [eventType, debouncedLocation, debouncedSearch, sortBy, sortOrder, searchParams, router]);
 
   const currentPage = parseInt(searchParams.get('page') || '1');
   const eventsPerPage = 9;
@@ -91,7 +129,11 @@ export default function EventFilters({ initialEvents, initialTotal }: EventFilte
         </select>
       </div>
 
-      {events.length === 0 ? (
+      {isLoading ? (
+        <div className="text-center">
+          <p className="text-xl mb-4">Loading events...</p>
+        </div>
+      ) : !events || events.length === 0 ? (
         <div className="text-center">
           <p className="text-xl mb-4">No events found.</p>
         </div>
