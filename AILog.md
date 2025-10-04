@@ -45,20 +45,7 @@ This file documents the main prompts and the resulting changes made by the AI as
 - Ran `prisma generate`.
 - Created `src/app/api/events/route.ts` with `GET` and `POST` handlers implementing authentication, validation, pagination, and filtering.
 
----
-
-### Prompt 5: Codebase Review and Rollback
-
-**Prompt:** "read the codebase again and till now generate what all has been done. I rollbacked some changes and want to start from here"
-
-**Resulting Changes:**
-- The assistant analyzed the codebase and found that the events API and the sign-in page had been rolled back.
-- A summary of the project's state was provided.
-- An import issue in `src/app/api/auth/[...nextauth]/route.ts` was corrected.
-
----
-
-### Prompt 6: Re-create Sign-in Page
+### Prompt 5: Re-create Sign-in Page after some error
 
 **Prompt:** "create the signin page first"
 
@@ -67,7 +54,7 @@ This file documents the main prompts and the resulting changes made by the AI as
 
 ---
 
-### Prompt 7: Implement Sign-up Page
+### Prompt 5: Implement Sign-up Page
 
 **Prompt:** "Implement the sign up/registration page too in cohesion with the sign in page (the button should toggle accordingly)"
 
@@ -78,7 +65,7 @@ This file documents the main prompts and the resulting changes made by the AI as
 
 ---
 
-### Prompt 8: Create Events API
+### Prompt 7: Create Events API
 
 **Prompt:** "Generate the complete API route file at `pages/api/events/index.js`. The API must use NextAuth for authentication... (and all the other details)"
 
@@ -89,7 +76,7 @@ This file documents the main prompts and the resulting changes made by the AI as
 
 ---
 
-### Prompt 9: Create Dashboard
+### Prompt 8: Create Dashboard
 
 **Prompt:** "I need to build the main dashboard for my event planner... (and all the other details)"
 

@@ -12,7 +12,7 @@ async function getEvents(userId: string) {
   try {
     const events = await prisma.event.findMany({
       where: {
-        userId: parseInt(userId),
+        userId: userId,
       },
       orderBy: {
         eventDate: 'asc',

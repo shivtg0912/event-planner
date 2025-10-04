@@ -25,7 +25,7 @@ export async function POST(req: Request) {
         eventDate: new Date(eventDate),
         eventTime: new Date(eventTime),
         location,
-        userId: parseInt(session.user.id),
+        userId: session.user.id,
       },
     });
 
@@ -50,7 +50,7 @@ export async function GET(req: Request) {
     const eventType = searchParams.get('eventType') as EventType | null;
 
     const where: any = {
-      userId: parseInt(session.user.id),
+      userId: session.user.id,
     };
 
     if (eventType) {
