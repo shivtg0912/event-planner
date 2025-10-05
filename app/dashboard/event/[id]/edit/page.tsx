@@ -25,8 +25,8 @@ export default function EditEventPage() {
   }, [id]);
 
   return (
-    <div className="p-8">
-      <h1 className="text-3xl font-bold mb-8">Edit Event</h1>
+    <div className="p-8 bg-gray-50">
+      <h1 className="text-3xl font-bold mb-8"></h1>
       {event && <EventForm event={event} />}
     </div>
   );

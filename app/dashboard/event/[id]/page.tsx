@@ -6,6 +6,8 @@ import { authOptions } from '../../../api/auth/[...nextauth]/route';
 import { Event } from '@prisma/client';
 import Link from 'next/link';
 import { prisma } from '../../../lib/prisma';
+import LocalDate from '../../../../components/events/LocalDate';
+import LocalTime from '../../../../components/events/LocalTime';
 
 async function getEvent(id: string, session: Session | null) {
   if (!session || !session.user?.id) return null;
@@ -117,12 +119,7 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
                   <div className="flex-grow">
                     <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-1">Date</h3>
                     <p className="text-lg font-semibold text-gray-900">
-                      {new Date(event.eventDate).toLocaleDateString('en-US', {
-                        weekday: 'long',
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                      })}
+                      <LocalDate iso={event.eventDate as unknown as string} />
                     </p>
                   </div>
                 </div>
@@ -138,14 +135,7 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
                   <div className="flex-grow">
                     <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-1">Time</h3>
                     <p className="text-lg font-semibold text-gray-900">
-                      {(() => {
-                        const timeDate = new Date(event.eventTime);
-                        const hours = timeDate.getHours();
-                        const minutes = timeDate.getMinutes().toString().padStart(2, '0');
-                        const ampm = hours >= 12 ? 'PM' : 'AM';
-                        const displayHours = hours % 12 || 12;
-                        return `${displayHours}:${minutes} ${ampm}`;
-                      })()}
+                      <LocalTime iso={event.eventTime as unknown as string} />
                     </p>
                   </div>
                 </div>

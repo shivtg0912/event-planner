@@ -37,7 +37,7 @@ This file documents the main prompts and the resulting changes made by the AI as
 
 ---
 
-### Prompt 7: Implement Sign-up Page
+### Prompt 5: Implement Sign-up and Sign-in Page
 
 **Prompt:** "Implement the sign in and sign up/registration page too in cohesion with the sign in page (the button should toggle accordingly)"
 
@@ -49,7 +49,7 @@ This file documents the main prompts and the resulting changes made by the AI as
 
 ---
 
-### Prompt 8: Create Events API
+### Prompt 6: Create Events API
 
 **Prompt:** "Generate the complete API route file at `pages/api/events/index.js`. The API must use NextAuth for authentication... (and all the other details)"
 
@@ -60,7 +60,7 @@ This file documents the main prompts and the resulting changes made by the AI as
 
 ---
 
-### Prompt 9: Create Dashboard
+### Prompt 7: Create Dashboard
 
 **Prompt:** "I need to build the main dashboard for my event planner... (and all the other details)"
 
@@ -74,7 +74,7 @@ This file documents the main prompts and the resulting changes made by the AI as
 
 ---
 
-### Prompt 11: Create Event UI
+### Prompt 8: Create Event UI
 
 **User Query:**
 - "Build a user interface (a window that allows user to create a new event card so that it is added in the dashboard right now only create new event button exists)."
@@ -87,7 +87,7 @@ This file documents the main prompts and the resulting changes made by the AI as
 
 ---
 
-### Prompt 12: Implement Update and Delete Functionality for Events
+### Prompt 9: Implement Update and Delete Functionality for Events
 
 **User Query:** "Create the Update and Delete endpoints for our event cards. When a user selects the card they can view all the details and also add a triple dot menu on top right corner of each card for update and delete"
 
@@ -101,7 +101,7 @@ This file documents the main prompts and the resulting changes made by the AI as
 
 ---
 
-### Prompt 14: Implement Sorting, Filtering, and Searching
+### Prompt 10: Implement Sorting, Filtering, and Searching
 
 **User Query:** "add sorting based on these factors - Date (both ascending and descending), Location. also add filtering based on event type, location. also add searching based on event name"
 
@@ -113,7 +113,7 @@ This file documents the main prompts and the resulting changes made by the AI as
 
 ---
 
-### Prompt 15: Refactor EventFilters and Implement Debouncing
+### Prompt 11: Refactor EventFilters and Implement Debouncing
 
 **User Query:** "Please refactor the EventFilters.tsx component and any related file to fix two issues: the initial data vanishing, and to make the filters update dynamically and efficiently. First, prevente the useEffect from running on its initial mount; use a useRef hook to track the first render and add a condition inside the useEffect to skip the API fetch on the initial mount. Second, to make the text-based filters for search and location more efficient, implement debouncing. Create a custom useDebounce hook that takes a value and a delay (e.g., 500ms) and returns the debounced value. Then, use this hook in the EventFilters component to get debounced versions of the search and location states, and update the useEffect's dependency array to use these debounced values. This will ensure the API is only called after the user has stopped typing. The final result should be a component that correctly displays initial data and updates efficiently and automatically whenever a filter value changes."
 
