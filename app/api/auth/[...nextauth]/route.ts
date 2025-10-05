@@ -46,19 +46,22 @@ export const authOptions = {
       if (account?.provider === "google" || account?.provider === "github") {
         try {
           // Check if user exists in database
-          const existingUser = await prisma.user.findUnique({
+          let existingUser = await prisma.user.findUnique({
             where: { email: user.email! },
           });
 
           if (!existingUser) {
             // Create new user for OAuth providers
-            await prisma.user.create({
+            existingUser = await prisma.user.create({
               data: {
                 email: user.email!,
                 password: "", // OAuth users don't need password
               },
             });
           }
+          
+          // Set the database user ID for OAuth users
+          user.id = existingUser.id.toString();
         } catch (error) {
           console.error("Error creating OAuth user:", error);
           return false;
@@ -69,6 +72,19 @@ export const authOptions = {
     async jwt({ token, user }: { token: any; user: any }) {
       if (user) {
         token.id = user.id;
+      }
+      // For OAuth users, get the database user ID if not already set
+      if (!token.id && token.email) {
+        try {
+          const dbUser = await prisma.user.findUnique({
+            where: { email: token.email },
+          });
+          if (dbUser) {
+            token.id = dbUser.id.toString();
+          }
+        } catch (error) {
+          console.error("Error fetching user ID in JWT callback:", error);
+        }
       }
       return token;
     },
