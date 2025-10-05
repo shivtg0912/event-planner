@@ -5,7 +5,7 @@ import { EventType } from '@prisma/client';
 import Link from 'next/link';
 import { prisma } from '../lib/prisma';
 import EventFilters from './EventFilters';
-
+import UpcomingEvents from '../../components/events/UpcomingEvents';
 
 import { Prisma } from '@prisma/client';
 
@@ -74,6 +74,34 @@ async function getEvents({
   }
 }
 
+async function getTodaysEvents(userId: string) {
+  if (!userId) return [];
+
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  try {
+    const events = await prisma.event.findMany({
+      where: {
+        userId,
+        eventDate: {
+          gte: today,
+          lt: tomorrow,
+        },
+      },
+      orderBy: {
+        eventTime: 'asc',
+      },
+    });
+    return events;
+  } catch (error) {
+    console.error('Error fetching today\'s events:', error);
+    return [];
+  }
+}
+
 export default async function DashboardPage({ 
   searchParams 
 }: { 
@@ -94,9 +122,9 @@ export default async function DashboardPage({
 
   if (!session || !session.user || !session.user.id) {
     return (
-      <div className="p-8 text-center">
-        <h1 className="text-2xl font-bold mb-4">Access Denied</h1>
-        <p className="text-gray-600 mb-4">You need to be signed in to view this page.</p>
+      <div className="min-h-screen bg-gray-50 p-8 text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">Access Denied</h1>
+        <p className="text-gray-700 mb-4">You need to be signed in to view this page.</p>
         <Link href="/auth/signin" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
           Sign In
         </Link>
@@ -116,10 +144,12 @@ export default async function DashboardPage({
     sortOrder: resolvedSearchParams.sortOrder,
   });
 
+  const todaysEvents = await getTodaysEvents(session.user.id);
+
   return (
-    <div className="p-8">
+    <div className="min-h-screen bg-gray-50 p-8">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Your Events</h1>
+        <h1 className="text-3xl font-bold text-gray-900">Your Events</h1>
         <div className="flex gap-4">
           <Link href="/dashboard/create" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
             Create New Event
@@ -129,6 +159,7 @@ export default async function DashboardPage({
           </Link>
         </div>
       </div>
+      <UpcomingEvents events={todaysEvents} />
       <EventFilters initialEvents={events} initialTotal={total} />
     </div>
   );
