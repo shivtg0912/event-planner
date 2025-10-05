@@ -23,6 +23,7 @@ export default function EventFilters({ initialEvents, initialTotal }: EventFilte
   const [eventType, setEventType] = useState(searchParams.get('eventType') || '');
   const [location, setLocation] = useState(searchParams.get('location') || '');
   const [search, setSearch] = useState(searchParams.get('search') || '');
+  const [dateFilter, setDateFilter] = useState(searchParams.get('dateFilter') || '');
   const [sortBy, setSortBy] = useState(searchParams.get('sortBy') || 'eventDate');
   const [sortOrder, setSortOrder] = useState(searchParams.get('sortOrder') || 'asc');
 
@@ -54,6 +55,7 @@ export default function EventFilters({ initialEvents, initialTotal }: EventFilte
         params.set('eventType', eventType);
         params.set('location', debouncedLocation);
         params.set('search', debouncedSearch);
+        params.set('dateFilter', dateFilter);
         params.set('sortBy', sortBy);
         params.set('sortOrder', sortOrder);
 
@@ -78,7 +80,7 @@ export default function EventFilters({ initialEvents, initialTotal }: EventFilte
     };
 
     fetchEvents();
-  }, [eventType, debouncedLocation, debouncedSearch, sortBy, sortOrder, searchParams, router]);
+  }, [eventType, debouncedLocation, debouncedSearch, dateFilter, sortBy, sortOrder, searchParams, router]);
 
   const currentPage = parseInt(searchParams.get('page') || '1');
   const eventsPerPage = 9;
@@ -86,7 +88,7 @@ export default function EventFilters({ initialEvents, initialTotal }: EventFilte
 
   return (
     <div>
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
         <input
           type="text"
           placeholder="Search by event name"
@@ -111,22 +113,44 @@ export default function EventFilters({ initialEvents, initialTotal }: EventFilte
           onChange={(e) => setLocation(e.target.value)}
           className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
         />
-        <select
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value)}
-          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-        >
-          <option value="eventDate">Date</option>
-          <option value="location">Location</option>
-        </select>
-        <select
-          value={sortOrder}
-          onChange={(e) => setSortOrder(e.target.value)}
-          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-        >
-          <option value="asc">Ascending</option>
-          <option value="desc">Descending</option>
-        </select>
+        <div className="relative">
+          <input
+            type="date"
+            value={dateFilter}
+            onChange={(e) => setDateFilter(e.target.value)}
+            placeholder="Filter by date"
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          />
+          {dateFilter && (
+            <button
+              onClick={() => setDateFilter('')}
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              title="Clear date filter"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          )}
+        </div>
+        <div className="grid grid-cols-2 gap-2">
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          >
+            <option value="eventDate">Date</option>
+            <option value="location">Location</option>
+          </select>
+          <select
+            value={sortOrder}
+            onChange={(e) => setSortOrder(e.target.value)}
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          >
+            <option value="asc">Asc</option>
+            <option value="desc">Desc</option>
+          </select>
+        </div>
       </div>
 
       {isLoading ? (

@@ -16,6 +16,7 @@ async function getEvents({
   eventType, 
   location, 
   search, 
+  dateFilter,
   sortBy, 
   sortOrder 
 }: { 
@@ -25,6 +26,7 @@ async function getEvents({
   eventType?: EventType | null; 
   location?: string | null; 
   search?: string | null; 
+  dateFilter?: string | null;
   sortBy?: string | null; 
   sortOrder?: string | null; 
 }) {
@@ -34,6 +36,17 @@ async function getEvents({
   if (eventType) where.eventType = eventType;
   if (location) where.location = { contains: location, mode: 'insensitive' };
   if (search) where.eventName = { contains: search, mode: 'insensitive' };
+  
+  if (dateFilter) {
+    const filterDate = new Date(dateFilter);
+    const nextDay = new Date(filterDate);
+    nextDay.setDate(nextDay.getDate() + 1);
+    
+    where.eventDate = {
+      gte: filterDate,
+      lt: nextDay,
+    };
+  }
 
   const orderBy: Prisma.EventOrderByWithRelationInput = {};
   if (
@@ -69,6 +82,7 @@ export default async function DashboardPage({
     eventType?: EventType; 
     location?: string; 
     search?: string; 
+    dateFilter?: string;
     sortBy?: string; 
     sortOrder?: string; 
   }> 
@@ -97,6 +111,7 @@ export default async function DashboardPage({
     eventType: resolvedSearchParams.eventType,
     location: resolvedSearchParams.location,
     search: resolvedSearchParams.search,
+    dateFilter: resolvedSearchParams.dateFilter,
     sortBy: resolvedSearchParams.sortBy,
     sortOrder: resolvedSearchParams.sortOrder,
   });
@@ -109,11 +124,9 @@ export default async function DashboardPage({
           <Link href="/dashboard/create" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
             Create New Event
           </Link>
-          <form action="/api/auth/signout" method="post">
-            <button type="submit" className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-              Sign Out
-            </button>
-          </form>
+          <Link href="/auth/signout" className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+            Sign Out
+          </Link>
         </div>
       </div>
       <EventFilters initialEvents={events} initialTotal={total} />

@@ -66,6 +66,7 @@ export async function GET(req: Request) {
     const sortOrder = searchParams.get('sortOrder') || 'asc';
     const location = searchParams.get('location');
     const search = searchParams.get('search');
+    const dateFilter = searchParams.get('dateFilter');
 
     const where: Prisma.EventWhereInput = {
       userId: session.user.id,
@@ -86,6 +87,17 @@ export async function GET(req: Request) {
       where.eventName = {
         contains: search,
         mode: 'insensitive',
+      };
+    }
+
+    if (dateFilter) {
+      const filterDate = new Date(dateFilter);
+      const nextDay = new Date(filterDate);
+      nextDay.setDate(nextDay.getDate() + 1);
+      
+      where.eventDate = {
+        gte: filterDate,
+        lt: nextDay,
       };
     }
 

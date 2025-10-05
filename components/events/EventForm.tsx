@@ -51,9 +51,10 @@ export default function EventForm({ event }: EventFormProps) {
       return;
     }
 
-    // Combine date and time into proper datetime strings
-    const eventDateTime = eventDate ? (eventTime ? `${eventDate}T${eventTime}:00.000Z` : `${eventDate}T00:00:00.000Z`) : null;
-    const eventTimeDateTime = eventDate ? (eventTime ? `${eventDate}T${eventTime}:00.000Z` : `${eventDate}T00:00:00.000Z`) : null;
+    // Combine date and time without timezone conversion
+    // Use local timezone by not adding Z at the end
+    const eventDateTime = eventDate ? (eventTime ? `${eventDate}T${eventTime}:00` : `${eventDate}T00:00:00`) : null;
+    const eventTimeDateTime = eventDate ? (eventTime ? `${eventDate}T${eventTime}:00` : `${eventDate}T00:00:00`) : null;
 
     const res = await fetch(event ? `${process.env.NEXT_PUBLIC_BASE_URL}/api/events/${event.id}` : `${process.env.NEXT_PUBLIC_BASE_URL}/api/events`, {
       method: event ? 'PATCH' : 'POST',
