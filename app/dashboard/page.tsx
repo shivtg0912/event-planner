@@ -1,7 +1,7 @@
 
-import { getServerSession } from 'next-auth';
+import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../api/auth/[...nextauth]/route';
-import { Event, EventType } from '@prisma/client';
+import { EventType } from '@prisma/client';
 import Link from 'next/link';
 import { prisma } from '../lib/prisma';
 import EventFilters from './EventFilters';

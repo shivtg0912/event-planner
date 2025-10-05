@@ -1,6 +1,7 @@
 
 
-import { getServerSession, Session } from 'next-auth';
+import { getServerSession } from 'next-auth/next';
+import type { Session } from 'next-auth';
 import { authOptions } from '../../../api/auth/[...nextauth]/route';
 import { Event } from '@prisma/client';
 import Link from 'next/link';
@@ -56,7 +57,7 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
             </svg>
           </div>
           <h1 className="text-2xl font-bold mb-4 text-gray-900">Event Not Found</h1>
-          <p className="text-gray-600 mb-6">The event you're looking for doesn't exist or you don't have permission to view it.</p>
+          <p className="text-gray-600 mb-6">The event you&apos;re looking for doesn&apos;t exist or you don&apos;t have permission to view it.</p>
           <Link 
             href="/dashboard" 
             className="inline-flex items-center px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"

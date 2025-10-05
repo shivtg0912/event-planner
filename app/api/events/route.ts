@@ -1,7 +1,7 @@
 
 import { Prisma, EventType } from '@prisma/client';
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../auth/[...nextauth]/route';
 import { prisma } from '../../lib/prisma';
 
@@ -91,7 +91,7 @@ export async function GET(req: Request) {
 
     const orderBy: Prisma.EventOrderByWithRelationInput = {};
     if (sortBy) {
-      (orderBy as any)[sortBy] = sortOrder;
+      (orderBy as Record<string, unknown>)[sortBy] = sortOrder;
     }
 
     const [events, total] = await prisma.$transaction([

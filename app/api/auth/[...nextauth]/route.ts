@@ -1,12 +1,12 @@
-import NextAuth from "next-auth";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import NextAuth from "next-auth/next";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
 import * as bcrypt from "bcrypt";
-import { NextAuthOptions } from "next-auth";
 import { prisma } from "../../../lib/prisma";
 
-export const authOptions: NextAuthOptions = {
+export const authOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -22,7 +22,7 @@ export const authOptions: NextAuthOptions = {
         email: { label: "Email", type: "text", placeholder: "jsmith@example.com" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials) {
+      async authorize(credentials: any) {
         if (!credentials) {
           return null;
         }
@@ -39,10 +39,10 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   session: {
-    strategy: "jwt",
+    strategy: "jwt" as const,
   },
   callbacks: {
-    async signIn({ user, account, profile }) {
+    async signIn({ user, account }: { user: any; account: any }) {
       if (account?.provider === "google" || account?.provider === "github") {
         try {
           // Check if user exists in database
@@ -66,13 +66,13 @@ export const authOptions: NextAuthOptions = {
       }
       return true;
     },
-    async jwt({ token, user }) {
+    async jwt({ token, user }: { token: any; user: any }) {
       if (user) {
         token.id = user.id;
       }
       return token;
     },
-    async session({ session, token }) {
+    async session({ session, token }: { session: any; token: any }) {
         if(session.user){
             session.user.id = token.id as string;
         }
