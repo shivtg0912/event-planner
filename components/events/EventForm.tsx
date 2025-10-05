@@ -17,6 +17,7 @@ export default function EventForm({ event }: EventFormProps) {
   const [location, setLocation] = useState(event ? '' : 'Online');
   const [description, setDescription] = useState('');
   const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -43,39 +44,57 @@ export default function EventForm({ event }: EventFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Prevent double submission
+    if (isSubmitting) return;
+    
     setError('');
+    setIsSubmitting(true);
 
-    // Validate required fields
-    if (!eventName || !eventType || !eventDate) {
-      setError('Please fill in all required fields');
-      return;
-    }
+    try {
+      // Validate required fields
+      if (!eventName || !eventType || !eventDate) {
+        setError('Please fill in all required fields');
+        setIsSubmitting(false);
+        return;
+      }
 
-    // Combine date and time without timezone conversion
-    // Use local timezone by not adding Z at the end
-    const eventDateTime = eventDate ? (eventTime ? `${eventDate}T${eventTime}:00` : `${eventDate}T00:00:00`) : null;
-    const eventTimeDateTime = eventDate ? (eventTime ? `${eventDate}T${eventTime}:00` : `${eventDate}T00:00:00`) : null;
+      // Create a date object in the user's local timezone
+      const [year, month, day] = eventDate.split('-').map(Number);
+      const [hours, minutes] = eventTime ? eventTime.split(':').map(Number) : [0, 0];
+      
+      // Create date in local timezone
+      const localDate = new Date(year, month - 1, day, hours, minutes);
+      
+      // Convert to ISO string (this will be in UTC, but we'll store the ISO string)
+      const eventDateTime = localDate.toISOString();
+      const eventTimeDateTime = localDate.toISOString();
 
-    const res = await fetch(event ? `${process.env.NEXT_PUBLIC_BASE_URL}/api/events/${event.id}` : `${process.env.NEXT_PUBLIC_BASE_URL}/api/events`, {
-      method: event ? 'PATCH' : 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ 
-        eventName, 
-        eventType, 
-        eventDate: eventDateTime, 
-        eventTime: eventTimeDateTime, 
-        location,
-        description 
-      }),
-    });
+      const res = await fetch(event ? `${process.env.NEXT_PUBLIC_BASE_URL}/api/events/${event.id}` : `${process.env.NEXT_PUBLIC_BASE_URL}/api/events`, {
+        method: event ? 'PATCH' : 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          eventName, 
+          eventType, 
+          eventDate: eventDateTime, 
+          eventTime: eventTimeDateTime, 
+          location,
+          description 
+        }),
+      });
 
-    if (res.ok) {
-      router.push(event ? `/dashboard/event/${event.id}` : '/dashboard');
-    } else {
-      const data = await res.json();
-      setError(data.error || 'Something went wrong');
+      if (res.ok) {
+        router.push(event ? `/dashboard/event/${event.id}` : '/dashboard');
+      } else {
+        const data = await res.json();
+        setError(data.error || 'Something went wrong');
+        setIsSubmitting(false);
+      }
+    } catch (err) {
+      setError('An error occurred while submitting the form');
+      setIsSubmitting(false);
     }
   };
 
@@ -267,17 +286,31 @@ export default function EventForm({ event }: EventFormProps) {
               <div className="flex flex-col sm:flex-row gap-3">
                 <button
                   type="submit"
-                  className="inline-flex items-center justify-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  disabled={isSubmitting}
+                  className="inline-flex items-center justify-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  {event ? 'Update Event' : 'Create Event'}
+                  {isSubmitting ? (
+                    <>
+                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      {event ? 'Updating...' : 'Creating...'}
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      {event ? 'Update Event' : 'Create Event'}
+                    </>
+                  )}
                 </button>
                 <button
                   type="button"
+                  disabled={isSubmitting}
                   onClick={() => router.push(event ? `/dashboard/event/${event.id}` : '/dashboard')}
-                  className="inline-flex items-center justify-center px-6 py-3 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+                  className="inline-flex items-center justify-center px-6 py-3 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

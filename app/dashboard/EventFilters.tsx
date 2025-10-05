@@ -31,6 +31,7 @@ export default function EventFilters({ initialEvents, initialTotal }: EventFilte
   const debouncedLocation = useDebounce(location, 500);
 
   const isInitialMount = useRef(true);
+  const prevFiltersRef = useRef({ eventType, location: debouncedLocation, search: debouncedSearch, dateFilter, sortBy, sortOrder });
 
   // Update state when initialEvents change (e.g., on page refresh)
   useEffect(() => {
@@ -43,15 +44,32 @@ export default function EventFilters({ initialEvents, initialTotal }: EventFilte
   }, [initialEvents, initialTotal]);
 
   useEffect(() => {
+    // Skip on initial mount
     if (isInitialMount.current) {
       isInitialMount.current = false;
+      prevFiltersRef.current = { eventType, location: debouncedLocation, search: debouncedSearch, dateFilter, sortBy, sortOrder };
       return;
     }
+
+    // Check if filters actually changed
+    const filtersChanged = 
+      prevFiltersRef.current.eventType !== eventType ||
+      prevFiltersRef.current.location !== debouncedLocation ||
+      prevFiltersRef.current.search !== debouncedSearch ||
+      prevFiltersRef.current.dateFilter !== dateFilter ||
+      prevFiltersRef.current.sortBy !== sortBy ||
+      prevFiltersRef.current.sortOrder !== sortOrder;
+
+    if (!filtersChanged) {
+      return;
+    }
+
+    prevFiltersRef.current = { eventType, location: debouncedLocation, search: debouncedSearch, dateFilter, sortBy, sortOrder };
 
     const fetchEvents = async () => {
       setIsLoading(true);
       try {
-        const params = new URLSearchParams(searchParams.toString());
+        const params = new URLSearchParams();
         params.set('eventType', eventType);
         params.set('location', debouncedLocation);
         params.set('search', debouncedSearch);
@@ -80,7 +98,8 @@ export default function EventFilters({ initialEvents, initialTotal }: EventFilte
     };
 
     fetchEvents();
-  }, [eventType, debouncedLocation, debouncedSearch, dateFilter, sortBy, sortOrder, searchParams, router]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [eventType, debouncedLocation, debouncedSearch, dateFilter, sortBy, sortOrder]);
 
   const currentPage = parseInt(searchParams.get('page') || '1');
   const eventsPerPage = 9;

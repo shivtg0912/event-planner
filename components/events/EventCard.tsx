@@ -18,7 +18,11 @@ export default function EventCard({ event, isLastEventOnPage = false, currentPag
   const [formattedTime, setFormattedTime] = useState<string | null>(null);
 
   useEffect(() => {
-    setFormattedDate(new Date(event.eventDate).toLocaleDateString());
+    // Format date in user's local timezone
+    const eventDate = new Date(event.eventDate);
+    setFormattedDate(eventDate.toLocaleDateString());
+    
+    // Format time in user's local timezone
     const timeDate = new Date(event.eventTime);
     const hours = timeDate.getHours().toString().padStart(2, '0');
     const minutes = timeDate.getMinutes().toString().padStart(2, '0');
