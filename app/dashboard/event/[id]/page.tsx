@@ -1,10 +1,12 @@
 
-import { getServerSession } from 'next-auth';
+
+import { getServerSession, Session } from 'next-auth';
 import { authOptions } from '../../../api/auth/[...nextauth]/route';
 import { Event } from '@prisma/client';
 import Link from 'next/link';
 
-async function getEvent(id: string, session: any) {
+async function getEvent(id: string, session: Session | null) {
+
   if (!session) return null;
 
   const res = await fetch(`${process.env.NEXTAUTH_URL}/api/events/${id}`);
@@ -18,12 +20,13 @@ async function getEvent(id: string, session: any) {
 
 
 interface EventDetailPageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export default async function EventDetailPage({ params }: EventDetailPageProps) {
   const session = await getServerSession(authOptions);
-  const event: Event | null = await getEvent(params.id, session);
+  const resolvedParams = await params;
+  const event: Event | null = await getEvent(resolvedParams.id, session);
 
   if (!event) {
     return (

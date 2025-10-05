@@ -52,7 +52,7 @@ export default function EventForm({ event }: EventFormProps) {
     const eventDateTime = eventDate ? (eventTime ? `${eventDate}T${eventTime}:00.000Z` : `${eventDate}T00:00:00.000Z`) : null;
     const eventTimeDateTime = eventDate ? (eventTime ? `${eventDate}T${eventTime}:00.000Z` : `${eventDate}T00:00:00.000Z`) : null;
 
-    const res = await fetch(event ? `/api/events/${event.id}` : '/api/events', {
+    const res = await fetch(event ? `${process.env.NEXT_PUBLIC_BASE_URL}/api/events/${event.id}` : `${process.env.NEXT_PUBLIC_BASE_URL}/api/events`, {
       method: event ? 'PATCH' : 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -36,7 +36,13 @@ async function getEvents({
   if (search) where.eventName = { contains: search, mode: 'insensitive' };
 
   const orderBy: Prisma.EventOrderByWithRelationInput = {};
-  if (sortBy) orderBy[sortBy] = sortOrder;
+  if (
+    sortBy &&
+    sortOrder &&
+    (sortBy in Prisma.EventScalarFieldEnum)
+  ) {
+    orderBy[sortBy as keyof Prisma.EventOrderByWithRelationInput] = sortOrder as Prisma.SortOrder;
+  }
 
   try {
     const [events, total] = await prisma.$transaction([
@@ -58,17 +64,18 @@ async function getEvents({
 export default async function DashboardPage({ 
   searchParams 
 }: { 
-  searchParams: { 
+  searchParams: Promise<{ 
     page?: string; 
     eventType?: EventType; 
     location?: string; 
     search?: string; 
     sortBy?: string; 
     sortOrder?: string; 
-  } 
+  }> 
 }) {
   const session = await getServerSession(authOptions);
-  const currentPage = parseInt(searchParams.page || '1');
+  const resolvedSearchParams = await searchParams;
+  const currentPage = parseInt(resolvedSearchParams.page || '1');
   const eventsPerPage = 9;
 
   if (!session || !session.user || !session.user.id) {
@@ -87,11 +94,11 @@ export default async function DashboardPage({
     userId: session.user.id,
     take: eventsPerPage,
     skip: (currentPage - 1) * eventsPerPage,
-    eventType: searchParams.eventType,
-    location: searchParams.location,
-    search: searchParams.search,
-    sortBy: searchParams.sortBy,
-    sortOrder: searchParams.sortOrder,
+    eventType: resolvedSearchParams.eventType,
+    location: resolvedSearchParams.location,
+    search: resolvedSearchParams.search,
+    sortBy: resolvedSearchParams.sortBy,
+    sortOrder: resolvedSearchParams.sortOrder,
   });
 
   return (
