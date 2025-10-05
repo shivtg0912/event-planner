@@ -8,9 +8,11 @@ import { useEffect, useState } from 'react';
 
 interface EventCardProps {
   event: Event;
+  isLastEventOnPage?: boolean;
+  currentPage?: number;
 }
 
-export default function EventCard({ event }: EventCardProps) {
+export default function EventCard({ event, isLastEventOnPage = false, currentPage = 1 }: EventCardProps) {
   const router = useRouter();
   const [formattedDate, setFormattedDate] = useState<string | null>(null);
 
@@ -25,7 +27,14 @@ export default function EventCard({ event }: EventCardProps) {
       });
 
       if (res.ok) {
-        router.refresh();
+        if (isLastEventOnPage && currentPage > 1) {
+          const currentUrl = new URL(window.location.href);
+          const searchParams = new URLSearchParams(currentUrl.search);
+          searchParams.set('page', (currentPage - 1).toString());
+          router.push(`/dashboard?${searchParams.toString()}`);
+        } else {
+          router.refresh();
+        }
       }
     }
   };

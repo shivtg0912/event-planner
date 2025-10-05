@@ -1,5 +1,5 @@
 
-import { Prisma } from '@prisma/client';
+import { Prisma, EventType } from '@prisma/client';
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../auth/[...nextauth]/route';
@@ -61,7 +61,7 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const take = parseInt(searchParams.get('take') || '10');
     const skip = parseInt(searchParams.get('skip') || '0');
-    const eventType = searchParams.get('eventType') as Prisma.EventType | null;
+    const eventType = searchParams.get('eventType') as EventType | null;
     const sortBy = searchParams.get('sortBy') || 'eventDate';
     const sortOrder = searchParams.get('sortOrder') || 'asc';
     const location = searchParams.get('location');
@@ -91,7 +91,7 @@ export async function GET(req: Request) {
 
     const orderBy: Prisma.EventOrderByWithRelationInput = {};
     if (sortBy) {
-      orderBy[sortBy] = sortOrder;
+      (orderBy as any)[sortBy] = sortOrder;
     }
 
     const [events, total] = await prisma.$transaction([

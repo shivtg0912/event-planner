@@ -47,7 +47,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
       return NextResponse.json({ error: 'Not Found' }, { status: 404 });
     }
 
-    const { eventName, eventType, eventDate, eventTime, location } = await req.json();
+    const { eventName, eventType, eventDate, eventTime, location, description } = await req.json();
 
     const updatedEvent = await prisma.event.update({
       where: { id: eventId },
@@ -57,6 +57,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
         eventDate: eventDate ? new Date(eventDate) : undefined,
         eventTime: eventTime ? new Date(eventTime) : undefined,
         location,
+        description: description !== undefined ? description : undefined,
       },
     });
 

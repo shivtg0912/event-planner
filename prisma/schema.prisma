@@ -25,6 +25,7 @@ model Event {
   eventDate   DateTime
   eventTime   DateTime
   location    String
+  description String?
   user        User      @relation(fields: [userId], references: [id])
   userId      String
 }
