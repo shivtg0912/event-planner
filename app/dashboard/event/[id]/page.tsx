@@ -138,11 +138,14 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
                   <div className="flex-grow">
                     <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-1">Time</h3>
                     <p className="text-lg font-semibold text-gray-900">
-                      {new Date(event.eventTime).toLocaleTimeString('en-US', {
-                        hour: 'numeric',
-                        minute: '2-digit',
-                        hour12: true
-                      })}
+                      {(() => {
+                        const timeDate = new Date(event.eventTime);
+                        const hours = timeDate.getHours();
+                        const minutes = timeDate.getMinutes().toString().padStart(2, '0');
+                        const ampm = hours >= 12 ? 'PM' : 'AM';
+                        const displayHours = hours % 12 || 12;
+                        return `${displayHours}:${minutes} ${ampm}`;
+                      })()}
                     </p>
                   </div>
                 </div>
