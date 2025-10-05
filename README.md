@@ -55,7 +55,12 @@ A full-stack event management application built with Next.js framework and Postg
 - PostgreSQL database (local or cloud)
 - npm or yarn package manager
 
-### Installation Steps
+## Development History
+
+For a detailed view of the development process and implementation decisions:
+
+- **AI Prompt Log**: Check `AILog.md` for comprehensive Gemini CLI-assissted development history, including all features implemented, bugs fixed, and architectural decisions
+- **Git Commit History**: Check `commits.md` to go through the progress
 
 1. **Clone the repository**
    ```bash
@@ -151,6 +156,9 @@ Make sure to set all environment variables in your hosting platform:
 - `NEXTAUTH_URL` (your production URL)
 - `NEXTAUTH_SECRET`
 - OAuth credentials (if present)
+
+
+
 
 ## -References
 
